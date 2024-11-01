@@ -130,6 +130,7 @@ func TestPipeline(t *testing.T) {
 			p := NewPipeLine()
 			p.AddStage(filterMultiplesOfThree)
 			p.AddStage(filterNegativeNumbers)
+			p.AddStage(buffering)
 			dataSource := make(chan int)
 
 			go func() {

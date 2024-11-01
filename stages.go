@@ -63,18 +63,19 @@ func buffering(done chan struct{}, inChan <-chan int) <-chan int {
 		}
 	}()
 
-	t := time.NewTicker(5 * time.Second)
+	t := time.NewTicker(bufferDelay * time.Second)
 	go func() {
+		defer close(outChan)
 		for range t.C {
 			for {
 				if num, ok := buffer.Pop(); ok {
 					select {
 					case outChan <- num:
 					case <-done:
-						close(outChan)
+						return
 					}
 				} else {
-					break
+					return
 				}
 			}
 		}
