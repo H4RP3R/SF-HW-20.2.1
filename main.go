@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 )
 
@@ -64,6 +65,23 @@ func readInput(done chan struct{}) <-chan int {
 	return outChan
 }
 
+func waitForInterrupt(done chan struct{}) {
+	var wg sync.WaitGroup
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT)
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		fmt.Println("Press Ctrl+C to exit...")
+		<-sigChan
+		close(done)
+		fmt.Println("\nBye!")
+	}()
+
+	wg.Wait()
+}
+
 func display(done chan struct{}, products <-chan int) {
 	go func() {
 		for {
@@ -88,13 +106,5 @@ func main() {
 	products := p.Run(done, dataSource)
 	display(done, products)
 
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT)
-	go func() {
-		fmt.Println("Press Ctrl+C to exit...")
-		<-sigChan
-		fmt.Println("\nBye!")
-		os.Exit(0)
-	}()
-	<-done
+	waitForInterrupt(done)
 }
