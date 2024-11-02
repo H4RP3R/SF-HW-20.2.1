@@ -112,7 +112,7 @@ func display(done chan struct{}, products <-chan int) {
 }
 
 func main() {
-	flag.DurationVar(&bufferDelay, "delay", 5*time.Second, "buffer delay")
+	flag.DurationVar(&bufferDelay, "delay", 15*time.Second, "buffer delay")
 	flag.IntVar(&bufferSize, "size", 24, "buffer size")
 	flag.Parse()
 
