@@ -76,6 +76,7 @@ func waitForInterrupt(done chan struct{}) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
+		fmt.Printf("buffer size: %d, delay: %v", bufferSize, bufferDelay)
 		fmt.Println("Press Ctrl+C to exit...")
 		<-sigChan
 		close(done)
@@ -106,7 +107,6 @@ func init() {
 }
 
 func main() {
-	fmt.Println(bufferDelay)
 	done := make(chan struct{})
 	p := NewPipeLine()
 	p.AddStage(filterMultiplesOfThree)
