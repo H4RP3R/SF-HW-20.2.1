@@ -69,10 +69,8 @@ func buffering(done chan struct{}, inChan <-chan int) <-chan int {
 		for {
 			select {
 			case <-ticker.C:
-				for !buffer.IsEmpty() {
-					if num, ok := buffer.Pop(); ok {
-						outChan <- num
-					}
+				if num, ok := buffer.Pop(); ok {
+					outChan <- num
 				}
 			case <-done:
 				return
