@@ -11,7 +11,6 @@ import (
 	"strings"
 	"sync"
 	"syscall"
-	"testing"
 	"time"
 )
 
@@ -27,7 +26,6 @@ func (p *pipeline) AddStage(stage Stage) {
 
 func (p *pipeline) Run(done chan struct{}, dataSource <-chan int) <-chan int {
 	c := dataSource
-
 	for _, stage := range p.stages {
 		c = stage(done, c)
 	}
@@ -76,8 +74,8 @@ func waitForInterrupt(done chan struct{}) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		fmt.Printf("buffer size: %d, delay: %v", bufferSize, bufferDelay)
 		fmt.Println("Press Ctrl+C to exit...")
+		fmt.Printf("buffer size: %d, delay: %v\n", bufferSize, bufferDelay)
 		<-sigChan
 		close(done)
 		fmt.Println("\nBye!")
@@ -99,14 +97,11 @@ func display(done chan struct{}, products <-chan int) {
 	}()
 }
 
-func init() {
-	testing.Init()
+func main() {
 	flag.DurationVar(&bufferDelay, "delay", 5*time.Second, "buffer delay")
 	flag.IntVar(&bufferSize, "size", 24, "buffer size")
 	flag.Parse()
-}
 
-func main() {
 	done := make(chan struct{})
 	p := NewPipeLine()
 	p.AddStage(filterMultiplesOfThree)

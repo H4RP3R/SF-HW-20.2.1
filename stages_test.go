@@ -1,10 +1,20 @@
 package main
 
 import (
+	"flag"
+	"os"
 	"reflect"
 	"testing"
 	"time"
 )
+
+func TestMain(m *testing.M) {
+	flag.DurationVar(&bufferDelay, "delay", 1*time.Second, "buffer delay")
+	flag.IntVar(&bufferSize, "size", 24, "buffer size")
+	flag.Parse()
+
+	os.Exit(m.Run())
+}
 
 func TestFilterNegativeNumbers(t *testing.T) {
 	testCases := []struct {
