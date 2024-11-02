@@ -12,6 +12,8 @@ var (
 	bufferSize  int
 )
 
+// filterNegativeNumbers returns a channel that emits only non-negative
+// numbers from the input channel.
 func filterNegativeNumbers(done chan struct{}, inChan <-chan int) <-chan int {
 	outChan := make(chan int)
 
@@ -31,6 +33,8 @@ func filterNegativeNumbers(done chan struct{}, inChan <-chan int) <-chan int {
 	return outChan
 }
 
+// filterMultiplesOfThree returns a channel that emits only numbers that
+// are multiples of 3.
 func filterMultiplesOfThree(done chan struct{}, inChan <-chan int) <-chan int {
 	outChan := make(chan int)
 
@@ -50,6 +54,8 @@ func filterMultiplesOfThree(done chan struct{}, inChan <-chan int) <-chan int {
 	return outChan
 }
 
+// buffering collects numbers from the input channel into a buffer and emits
+// them to the output channel at intervals specified by bufferDelay.
 func buffering(done chan struct{}, inChan <-chan int) <-chan int {
 	outChan := make(chan int)
 	buffer, err := ringBuf.New[int](bufferSize)

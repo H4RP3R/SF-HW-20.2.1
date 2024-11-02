@@ -19,14 +19,19 @@ var ErrInvalidInput = errors.New("invalid input: please enter a number")
 
 type Stage func(done chan struct{}, inChan <-chan int) <-chan int
 
+// pipeline represents a series of stages that process a stream of
+// integers.
 type pipeline struct {
 	stages []Stage
 }
 
+// AddStage appends a new stage to the pipeline's list of stages.
 func (p *pipeline) AddStage(stage Stage) {
 	p.stages = append(p.stages, stage)
 }
 
+// Run starts the pipeline, processing data from the dataSource channel and
+// returning a new channel that emits the final pipeline products.
 func (p *pipeline) Run(done chan struct{}, dataSource <-chan int) <-chan int {
 	c := dataSource
 	for _, stage := range p.stages {
@@ -36,10 +41,13 @@ func (p *pipeline) Run(done chan struct{}, dataSource <-chan int) <-chan int {
 	return c
 }
 
+// NewPipeLine creates and returns a new instance of a pipeline.
 func NewPipeLine() *pipeline {
 	return &pipeline{}
 }
 
+// readInput reads user input from the terminal and emits each number to the
+// outChan until the done channel is closed.
 func readInput(done chan struct{}) <-chan int {
 	outChan := make(chan int)
 	reader := bufio.NewReader(os.Stdin)
@@ -68,6 +76,8 @@ func readInput(done chan struct{}) <-chan int {
 	return outChan
 }
 
+// waitForInterrupt creates a goroutine that waits for a SIGINT signal and
+// exits the program when it's received.
 func waitForInterrupt(done chan struct{}) {
 	var wg sync.WaitGroup
 	sigChan := make(chan os.Signal, 1)
@@ -86,6 +96,8 @@ func waitForInterrupt(done chan struct{}) {
 	wg.Wait()
 }
 
+// display consumes a channel of pipeline products and prints them to the
+// console until the done channel is closed.
 func display(done chan struct{}, products <-chan int) {
 	go func() {
 		for {
