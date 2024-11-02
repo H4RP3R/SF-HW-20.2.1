@@ -3,6 +3,7 @@ package main
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestFilterNegativeNumbers(t *testing.T) {
@@ -127,6 +128,7 @@ func TestPipeline(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			done := make(chan struct{})
 			p := NewPipeLine()
 			p.AddStage(filterMultiplesOfThree)
 			p.AddStage(filterNegativeNumbers)
@@ -134,13 +136,19 @@ func TestPipeline(t *testing.T) {
 			dataSource := make(chan int)
 
 			go func() {
+				defer close(dataSource)
 				for _, num := range tc.testNumbers {
 					dataSource <- num
 				}
-				close(dataSource)
 			}()
 
-			products := p.Run(dataSource)
+			go func() {
+				// Simulate Ctrl+C
+				time.Sleep(5 * time.Second)
+				close(done)
+			}()
+
+			products := p.Run(done, dataSource)
 			for prod := range products {
 				tc.got = append(tc.got, prod)
 			}
