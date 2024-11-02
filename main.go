@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -13,6 +14,8 @@ import (
 	"syscall"
 	"time"
 )
+
+var ErrInvalidInput = errors.New("invalid input: please enter a number")
 
 type Stage func(done chan struct{}, inChan <-chan int) <-chan int
 
@@ -45,14 +48,13 @@ func readInput(done chan struct{}) <-chan int {
 		defer close(outChan)
 		for {
 			input, err := reader.ReadString('\n')
-			input = strings.TrimSpace(input)
 			if err != nil {
 				log.Println(err)
 			}
-
+			input = strings.TrimSpace(input)
 			num, err := strconv.Atoi(input)
 			if err != nil {
-				log.Println(err)
+				fmt.Println(ErrInvalidInput)
 			}
 
 			select {
