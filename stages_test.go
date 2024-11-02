@@ -144,7 +144,7 @@ func TestPipeline(t *testing.T) {
 
 			go func() {
 				// Simulate Ctrl+C
-				time.Sleep(5 * time.Second)
+				time.Sleep(bufferDelay + 5*time.Second)
 				close(done)
 			}()
 

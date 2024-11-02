@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,8 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"testing"
+	"time"
 )
 
 type Stage func(done chan struct{}, inChan <-chan int) <-chan int
@@ -95,7 +98,15 @@ func display(done chan struct{}, products <-chan int) {
 	}()
 }
 
+func init() {
+	testing.Init()
+	flag.DurationVar(&bufferDelay, "delay", 5*time.Second, "buffer delay")
+	flag.IntVar(&bufferSize, "size", 24, "buffer size")
+	flag.Parse()
+}
+
 func main() {
+	fmt.Println(bufferDelay)
 	done := make(chan struct{})
 	p := NewPipeLine()
 	p.AddStage(filterMultiplesOfThree)

@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	bufferDelay time.Duration = 1
-	bufferSize  int           = 10
+	bufferDelay time.Duration
+	bufferSize  int
 )
 
 func filterNegativeNumbers(done chan struct{}, inChan <-chan int) <-chan int {
@@ -63,7 +63,7 @@ func buffering(done chan struct{}, inChan <-chan int) <-chan int {
 		}
 	}()
 
-	ticker := time.NewTicker(bufferDelay * time.Second)
+	ticker := time.NewTicker(bufferDelay)
 	go func() {
 		defer close(outChan)
 		for {
