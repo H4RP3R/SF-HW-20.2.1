@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	ringBuf "github.com/H4RP3R/ring_buffer"
@@ -60,7 +59,7 @@ func buffering(done chan struct{}, inChan <-chan int) <-chan int {
 	outChan := make(chan int)
 	buffer, err := ringBuf.New[int](bufferSize)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
 	go func() {
