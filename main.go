@@ -63,12 +63,12 @@ func readInput(done chan struct{}) <-chan int {
 			num, err := strconv.Atoi(input)
 			if err != nil {
 				fmt.Println(ErrInvalidInput)
-			}
-
-			select {
-			case outChan <- num:
-			case <-done:
-				return
+			} else {
+				select {
+				case outChan <- num:
+				case <-done:
+					return
+				}
 			}
 		}
 	}()
