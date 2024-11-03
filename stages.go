@@ -71,7 +71,10 @@ func buffering(done chan struct{}, inChan <-chan int) <-chan int {
 
 	ticker := time.NewTicker(bufferDelay)
 	go func() {
-		defer close(outChan)
+		defer func() {
+			ticker.Stop()
+			close(outChan)
+		}()
 		for {
 			select {
 			case <-ticker.C:
